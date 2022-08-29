@@ -30,7 +30,9 @@ make_free_space()
         testdir=`ls -d "$KERNEL_VERSION"_[0-9]* | sed -n 1p`
         echo "Cleaning up $testdir "
         rm -rf $testdir
-        sync -f $MOUNT
+        echo "Applying sync for $MOUNT"
+    sync -f $MOUNT
+    echo "Sync done"
         cur_usage=$(get_disk_usage)
         if [ $cur_usage -gt $FREE_SPACE_THRESHOLD ]; then
             make_free_space
@@ -56,7 +58,9 @@ wait_if_pause()
     do
         if [ -f $RUNNING_FILE ]; then
             unlink $RUNNING_FILE
-            sync -f $MOUNT
+            echo "Applying sync for $MOUNT"
+    sync -f $MOUNT
+    echo "Sync done"
         fi
         sleep 10
     done
@@ -66,7 +70,9 @@ wait_if_pause()
 set_running_state()
 {
     touch $RUNNING_FILE
+    echo "Applying sync for $MOUNT"
     sync -f $MOUNT
+    echo "Sync done"
 }
 
 if [ -f "$MOUNT""/""$MASTER_COPY" ]; then
@@ -106,7 +112,9 @@ fi
 # From here keep a loop of untaring and renaming the kernel dirs
 while true
 do
+    echo "Applying sync for $MOUNT"
     sync -f $MOUNT
+    echo "Sync done"
     block_if_no_space_left
     # There could be half untared linx dir
     # may be due to failover , so we need to cleanup
