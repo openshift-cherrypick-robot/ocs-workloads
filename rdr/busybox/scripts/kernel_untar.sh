@@ -126,11 +126,13 @@ do
     # We are out of pause state
     # create a file for IO running
     set_running_state
+    echo "Performing untar"
     tar xfz $MASTER_COPY
     if [ $? -ne 0 ];
     then
         echo "Failed to untar kernel"
         exit 1
     fi
+    echo "Moving untar file to _`date +%s`" 
     mv $MOUNT/$KERNEL_DIRECTORY $MOUNT/$KERNEL_DIRECTORY"_`date +%s`"
 done
