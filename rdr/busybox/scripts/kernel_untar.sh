@@ -30,7 +30,9 @@ make_free_space()
         testdir=`ls -d "$KERNEL_VERSION"_[0-9]* | sed -n 1p`
         echo "Cleaning up $testdir "
         rm -rf $testdir
+	echo "applying sync on $MOUNT"
         sync -f $MOUNT
+	echo "Sync done"
         cur_usage=$(get_disk_usage)
         if [ $cur_usage -gt $FREE_SPACE_THRESHOLD ]; then
             make_free_space
@@ -56,7 +58,9 @@ wait_if_pause()
     do
         if [ -f $RUNNING_FILE ]; then
             unlink $RUNNING_FILE
+            echo "applying sync on $MOUNT"
             sync -f $MOUNT
+            echo "Sync done"
         fi
         sleep 10
     done
@@ -66,8 +70,9 @@ wait_if_pause()
 set_running_state()
 {
     touch $RUNNING_FILE
+    echo "applying sync on $MOUNT"
     sync -f $MOUNT
-}
+    echo "Sync done"
 
 if [ -f "$MOUNT""/""$MASTER_COPY" ]; then
     echo "Master copy tar already exists"
@@ -106,7 +111,9 @@ fi
 # From here keep a loop of untaring and renaming the kernel dirs
 while true
 do
+    echo "applying sync on $MOUNT"
     sync -f $MOUNT
+    echo "Sync done"
     block_if_no_space_left
     # There could be half untared linx dir
     # may be due to failover , so we need to cleanup
@@ -118,11 +125,13 @@ do
     # We are out of pause state
     # create a file for IO running
     set_running_state
+    echo "Performing kernel untar"
     tar xfz $MASTER_COPY
     if [ $? -ne 0 ];
     then
         echo "Failed to untar kernel"
         exit 1
     fi
+    echo "Moving extracted files to _`date +%s`"
     mv $MOUNT/$KERNEL_DIRECTORY $MOUNT/$KERNEL_DIRECTORY"_`date +%s`"
 done
