@@ -30,7 +30,7 @@ make_free_space()
         testdir=`ls -d "$KERNEL_VERSION"_[0-9]* | sed -n 1p`
         echo "Cleaning up $testdir "
         rm -rf $testdir
-        sync -f $MOUNT
+        sync -d $MOUNT
         cur_usage=$(get_disk_usage)
         if [ $cur_usage -gt $FREE_SPACE_THRESHOLD ]; then
             make_free_space
@@ -56,7 +56,7 @@ wait_if_pause()
     do
         if [ -f $RUNNING_FILE ]; then
             unlink $RUNNING_FILE
-            sync -f $MOUNT
+            sync -d $MOUNT
         fi
         sleep 10
     done
@@ -66,7 +66,7 @@ wait_if_pause()
 set_running_state()
 {
     touch $RUNNING_FILE
-    sync -f $MOUNT
+    sync -d $MOUNT
 }
 
 # Run kernal untar
@@ -123,7 +123,7 @@ fi
 sleep_time=$(shuf -i 180-500 -n1)
 while true
 do
-    sync -f $MOUNT
+    sync -d $MOUNT
     echo "Sleeping for $sleep_time"
     sleep $sleep_time
     block_if_no_space_left

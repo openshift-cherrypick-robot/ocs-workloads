@@ -51,4 +51,4 @@ do
     fi
 done
 unlink $PAUSE_FILE
-sync -f $MOUNT
+sync -d $MOUNT
